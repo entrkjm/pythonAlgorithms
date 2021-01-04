@@ -3,10 +3,14 @@ class Node:
         self.data = data
         self.next = next
 
+#Linked List의 원소를 클래스로 지정. 클래스의 data에는 입력 변수를, next에는 다음 Node를 지정
+
 
 class linkedList:
     def __init__(self):
         self.head = None
+
+    #Linked List의 head Node를 가리킨다
 
     def addLast(self, data):
 
