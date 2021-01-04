@@ -1,9 +1,10 @@
+#오늘부터 N일까지의 기사를 가져오는 프로그램
+
 import requests
 from bs4 import BeautifulSoup
+from datetime import date, timedelta
 
-# 로그인 endpoint
-
-url = 'https://www.mhns.co.kr/member/login.php'
+url = 'https://www.mhns.co.kr/member/login.php' # 로그인 endpoint
 
 data = {
     'user_id': 'entrkjm',
@@ -20,21 +21,29 @@ resp = s.get(my_page)
 
 soup = BeautifulSoup(resp.text, features='lxml')
 
-date =  '2020-'+ input('날짜 입력: ')
+dates = []
+
+n = int(input('오늘부터 며칠 내의 기사를 가져올까요?: '))
+
+for i in range(n):
+    dates.append(str(date.today()+timedelta(days=i)))
+
 table_row = list(soup.select('.table-row'))
 list_tag = []
 
 for i in table_row:
     test = i.select_one('.list-dated').get_text()
-    if test.find(date) != -1:
-        list_tag.append(i)
+    for j in range(3):
+        if test.find(dates[j]) != -1:
+            list_tag.append(i)
 
 res = [[] for i in range(len(list_tag))]
 
-for j in range(len(list_tag)):
-    res[j].append(list_tag[j].select_one('.list-section'))
-    res[j].append(list_tag[j].find('strong'))
-    print(res[j][0].get_text(), res[j][1].get_text())
+for k in range(len(list_tag)):
+    res[k].append(list_tag[k].select_one('.list-section'))
+    res[k].append(list_tag[k].find('strong'))
+    print(res[k][0].get_text(), res[k][1].get_text())
+
 
 # Dummy Test Codes:
 # for j in list_tag:
