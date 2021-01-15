@@ -33,7 +33,7 @@ list_tag = []
 
 for i in table_row:
     test = i.select_one('.list-dated').get_text()
-    for j in range(3):
+    for j in range(n):
         if test.find(dates[j]) != -1:
             list_tag.append(i)
 
