@@ -43,7 +43,7 @@ class tableCrawler:  # 편성표 크롤러 클래스를 만든다
 
         # pagesource를 가져와서 soup에 넣는다
 
-        for l in range(1, n+1):
+        for l in range(n):
             today = str(date.today()+timedelta(days = l)).replace('2021-', '').replace('-','.')
             time.sleep(1)
             self.driver.find_element_by_xpath("//*[contains(text(),{})]".format(today)).click() #KBS의 경우 이렇게 텍스트를 찾아 일일이 클릭해야한다.
@@ -103,7 +103,7 @@ dates = date.today()
 
 # 오늘 날짜
 
-Chromedriver = 'C:/Users/User/PycharmProjects/algorithm1/chromedriver'
+Chromedriver = 'C:/Users/admin/Downloads/chromedriver'
 
 n = int(input("가져올 날짜: "))
 
@@ -134,7 +134,7 @@ mbc_find = '.tit'
 
 for j in range(n):
     print('MBC ',str(dates+timedelta(days=j)), ' 편성표')
-    mbc_url = 'http://schedule.imbc.com/?chcode=TV&date=2020{}&c=0'.format(str(dates+timedelta(days=j)).replace('2021','').replace('-', ''))
+    mbc_url = 'http://schedule.imbc.com/?chcode=TV&date=2021{}&c=0'.format(str(dates+timedelta(days=j)).replace('2021','').replace('-', ''))
     mbc_programName, mbc_programTime = mbc.get_action(mbc_title_tag, mbc_time_tag, mbc_url)
     mbc_reboard = mbc.reboard_list2(mbc_find)
 
@@ -145,8 +145,7 @@ mbc.driver_close()
 
 # KBS 편성표를 가져온다
 
-kbs_url = 'http://schedule.kbs.co.kr/index.html?sname=schedule&stype=table&type=globalList&search_day=2021{}'.format(
-    dates)
+kbs_url = 'http://schedule.kbs.co.kr/index.html?sname=schedule&stype=table&type=globalList&search_day=2021{}'.format(str(dates+timedelta(days=j)).replace('2021','').replace('-', ''))
 kbs = tableCrawler(Chromedriver)
 kbs_title_tag = '.title'
 kbs_time_tag = 'span.time'
