@@ -87,8 +87,7 @@ class tableCrawler:  # 편성표 크롤러 클래스를 만든다
                 print('KBS{} '.format(str(i+1)),str(date.today()+timedelta(days = l))," 편성표")
                 programName = programTable[i].select(title_tag)
                 programTime = programTable[i].select(time_tag)
-                reboard_list = self.reboard_list('.program-box', '.case.type4') #reboard 메서드를 활용해 재방송인지 본방송인지 확인한다.
-
+                reboard_list = self.reboard_list3(soup,'.program-box') #reboard 메서드를 활용해 재방송인지 본방송인지 확인한다.
                 for j in range(len(programName)):
                     res = programTime[j].get_text() + ' ' + programName[j].get_text().replace('\n', ' ') + ' ' + reboard_list[j]
                     print(res)
@@ -123,6 +122,17 @@ class tableCrawler:  # 편성표 크롤러 클래스를 만든다
             else:
                 result.append('재')
 
+        return result
+    
+    def reboard_list3(self, soup, find_in): #KBS용
+        find_in_list = soup.select(find_in) #self.driver.find_elements_by_css_selector(self.find_in)
+        result = []
+
+        for i in find_in_list:
+            if i.find_all('span', attrs = {'title' : '재방송'}):
+                result.append('재')
+            else:
+                result.append('본')
         return result
 
     def driver_close(self):
@@ -175,7 +185,7 @@ mbc.driver_close()
 
 # KBS 편성표를 가져온다
 
-kbs_url = 'http://schedule.kbs.co.kr/index.html?sname=schedule&stype=table&type=globalList&search_day=2021{}'.format(str(dates+timedelta(days=j)).replace('2021','').replace('-', ''))
+kbs_url = 'http://schedule.kbs.co.kr/index.html?sname=schedule&stype=table&type=globalList&search_day=2021{}'.format(str(dates).replace('2021','').replace('-', ''))
 kbs = tableCrawler(Chromedriver)
 kbs_title_tag = '.title'
 kbs_time_tag = 'span.time'
