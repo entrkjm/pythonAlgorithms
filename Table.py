@@ -32,6 +32,37 @@ class tableCrawler:  # 편성표 크롤러 클래스를 만든다
         programTime = soup.select(time_tag)
 
         return programName, programTime
+    
+    def mbc_get(self, url):  # 프로그램 이름과 시간을 가져오는 메서드
+        self.title_tag = '.tit'
+        self.time1 = '.time'
+        self.time2 = '.time2'
+        self.box = '.scd-list li'
+        
+        self.driver.get(url)
+
+        time.sleep(3)
+
+        src = self.driver.page_source
+        soup = BeautifulSoup(src, features="lxml")
+
+        # pagesource를 가져와서 soup에 넣는다.
+        
+        box_list = soup.select(self.box)
+        programName = []
+        programTime = []
+        
+        for i in box_list:
+            if i.select_one(self.title_tag):
+                programName.append(i.select_one(self.title_tag))
+            
+            if i.select_one(self.time1):
+                programTime.append(i.select_one(self.time1))
+                
+            elif i.select_one(self.time2):
+                programTime.append(i.select_one(self.time2))
+        
+        return programName, programTime
 
     def kbs_get(self, title_tag, time_tag, url, n):  # kbs 프로그램 이름과 시간을 가져오는 메서드
         self.title_tag = title_tag
@@ -87,10 +118,10 @@ class tableCrawler:  # 편성표 크롤러 클래스를 만든다
         result = []
 
         for i in find_list:
-            if i.text.find('스페셜') != -1:
-                result.append('재')
-            else:
+            if i.text.find('스페셜') == -1 and i.text.find('재') == -1:
                 result.append('본')
+            else:
+                result.append('재')
 
         return result
 
@@ -103,7 +134,7 @@ dates = date.today()
 
 # 오늘 날짜
 
-Chromedriver = 'C:/Users/admin/Downloads/chromedriver'
+Chromedriver = 'C:/Users/user/Downloads/chromedriver_win32/chromedriver'
 
 n = int(input("가져올 날짜: "))
 
@@ -128,19 +159,18 @@ sbs.driver_close()
 #MBC 편성표를 가져온다
 
 mbc = tableCrawler(Chromedriver)
-mbc_title_tag = '.tit'
-mbc_time_tag = '.time > span'
 mbc_find = '.tit'
 
 for j in range(n):
     print('MBC ',str(dates+timedelta(days=j)), ' 편성표')
     mbc_url = 'http://schedule.imbc.com/?chcode=TV&date=2021{}&c=0'.format(str(dates+timedelta(days=j)).replace('2021','').replace('-', ''))
-    mbc_programName, mbc_programTime = mbc.get_action(mbc_title_tag, mbc_time_tag, mbc_url)
+    mbc_programName, mbc_programTime = mbc.mbc_get(mbc_url)
     mbc_reboard = mbc.reboard_list2(mbc_find)
-
+    
     for i in range(len(mbc_reboard)):
         print(mbc_programTime[i].text, mbc_programName[i].text, mbc_reboard[i])
     print()
+    
 mbc.driver_close()
 
 # KBS 편성표를 가져온다
